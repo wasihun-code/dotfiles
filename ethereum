@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+SESSION="eth-dev"
+PROJECT_DIR="$HOME/development/ethereum"
+
+tmux has-session -t "$SESSION" 2>/dev/null
+
+if [ $? != 0 ]; then
+  # Create session
+  tmux new-session -d -s "$SESSION" -c "$PROJECT_DIR" -n editor
+
+  # Window 0: Editor + Test runner
+  tmux split-window -h -t "$SESSION:editor" -c "$PROJECT_DIR"
+
+  # Window 1: Tests
+  tmux new-window -t "$SESSION" -n test -c "$PROJECT_DIR"
+
+  # Window 2: Ops / installs / configs
+  tmux new-window -t "$SESSION" -n ops -c "$PROJECT_DIR"
+
+  # Focus editor window
+  tmux select-window -t "$SESSION:editor"
+fi
+
+tmux attach -t "$SESSION"
+
